@@ -17,10 +17,15 @@ const userData = mongoose.Schema({
         type: 'string',
         required: true,
     }
+
     // userid: {
     //     type: mongoose.Schema.Types.ObjectId,
     //     ref: 'admin',
     //     required: true
     // }
-})
+},
+    {
+        timestamps: true,
+    }
+)
 module.exports = mongoose.model("userData", userData);

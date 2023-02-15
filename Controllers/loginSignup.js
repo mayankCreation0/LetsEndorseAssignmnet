@@ -1,6 +1,7 @@
 const models = require("../Models/userSignup");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const mongoose= require("mongoose");
 require("dotenv").config();
 
 const signup = async (req, res) => {
@@ -38,12 +39,14 @@ const login = async (req, res) => {
         }
         else{
         const match = bcrypt.compare(password, existingUser.password);
+            console.log(existingUser._id);
             if (match) {
                 const token = jwt.sign({ id: existingUser._id, email: existingUser.email, mobile: existingUser.mobile },process.env.SECRET_KEY, { expiresIn: '24h' });
                 res.status(200).send({ token: token });
             } else {
                 res.status(401).send({ error: 'Invalid email or password' });
             }
+            
     }
     } catch (err) {
         console.log(err);
@@ -75,18 +78,19 @@ const resetpassword = async (req, res) => {
 
 const updateData =  async (req, res) => {
     const { id } = req.params;
+    console.log(id);
     const { fullName, email, mobile } = req.body;
 
     try {
-        const existingUser = await models.findById(id)
+        const existingUser = await models.findOne({ _id: mongoose.Types.ObjectId(req.params.id) });
         if (!existingUser) {
             return res.status(404).json({ message: 'User not found' });
         }
         const encryptedName = bcrypt.hashSync(fullName, 10);
-        const encryptedEmail = bcrypt.hashSync(email, 10);
+        // const encryptedEmail = bcrypt.hashSync(email, 10);
         const encryptedPassword = bcrypt.hashSync(mobile, 10);
         existingUser.name = encryptedName;
-        existingUser.email = encryptedEmail;
+        existingUser.email = email;
         existingUser.password = encryptedPassword;
         await existingUser.save();
 
@@ -95,6 +99,7 @@ const updateData =  async (req, res) => {
         console.error(err);
         res.status(500).json({ message: 'Internal server error' });
     }
+
 };
 
 

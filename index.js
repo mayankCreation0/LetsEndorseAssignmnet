@@ -15,9 +15,10 @@ port = process.env.PORT || 3030;
 mongoose.set("strictQuery",true);
 mongoose.connect(process.env.DATA_URl)
 .then(()=>{
-    app.listen(port,()=>{
-        console.log(`server listening on ${port}`);
-    })
+    console.log("listen")
 }).catch((err)=>{
     console.log(err);
+})
+app.listen(port, () => {
+    console.log(`server listening on ${port}`);
 })
